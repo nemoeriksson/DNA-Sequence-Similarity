@@ -1,5 +1,5 @@
-#ifndef DNA_SEQ
-#define DNA_SEQ
+#ifndef DNA_SEQ_HPP
+#define DNA_SEQ_HPP
 
 #include <iostream>
 #include <cstdint>
@@ -31,6 +31,19 @@ namespace DNA
 			inline constexpr size_t get_kmer_count(const size_t k) const
 			{
 				return size()-k+1;
+			}
+
+			inline constexpr uint32_t get_kmer(const size_t i, const size_t k) const
+			{
+				uint32_t kmer {};
+
+				for (size_t j {}; j < k; ++j)
+				{
+					kmer <<= 2;
+					kmer |= (*this)[i+j];
+				}
+
+				return kmer;
 			}
 
 			static inline constexpr char to_letter(const uint8_t entry)

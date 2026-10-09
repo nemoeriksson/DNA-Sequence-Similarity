@@ -1,5 +1,5 @@
-#ifndef DNA_KMER
-#define DNA_KMER
+#ifndef DNA_KMER_HPP
+#define DNA_KMER_HPP
 
 #include <iostream>
 #include "dna_sequence.hpp"
@@ -11,27 +11,19 @@ namespace DNA
 		public:
 			constexpr KmerSet(Sequence const& dna_sequence, const size_t k)
 				: _size(dna_sequence.get_kmer_count(k))
-				, _occurrences(new short[_size]())
+				, _occurrences(new short[1ULL<<(2*k)]())
 			{
 				for (size_t i {}; i < _size; ++i)
-				{
-					uint32_t kmer {};
-					for (size_t j {}; j < k; ++j)
-					{
-						kmer <<= 2;
-						kmer |= dna_sequence[i+j];
-						std::cout << Sequence::to_letter(dna_sequence[j+i]);
-					}
-					std::cout << std::endl;
-
-					++_occurrences[kmer];
-				}
+					++_occurrences[dna_sequence.get_kmer(i, k)];
 			}
 
 			~KmerSet();
 
-			constexpr inline size_t size() const { return _size; }
-
+			inline constexpr size_t size() const { return _size; }
+			inline constexpr uint32_t operator[](const size_t i) const 
+			{
+				return _occurrences[i];
+			}
 
 		private:
 			const size_t _size;

@@ -1,12 +1,35 @@
+#include <chrono>
+#include <cstdlib>
 #include <iostream>
 #include "dna_sequence.hpp"
-#include "dna_kmer.hpp"
+#include "dna_similarity.hpp"
 
-int main(void)
+int main()
 {
-	DNA::Sequence dna_seq {"ACTG"};
-	std::cout << dna_seq << std::endl;
-	DNA::KmerSet kmer_set {dna_seq, 2};
+	constexpr size_t iterations = 10;
+	constexpr size_t max_k = 14;
+
+	DNA::Sequence seq_a {"ATACGATCGATATCTAGCTAGCTAGCTATATCTAGCATTAGCTAGCTATATCGATCGATATCGATGCTATAGCTAGTATTATATATAAGATGCATATTATAAAAATATATTATATCGATATTACGATGCTAGCTATATATCGATCGTATATCATTATATCGATATAT"};
+	DNA::Sequence seq_b {"AAATCATCATGTCAGCTACTATCTACTGACTACTACTAGCATTACATAATTCATGATCATCGAGCTACAGATTATATCGATATCTAGCTAGCTATATTATCATGCTAGCTATATATTATATCGATCAGTATATATAATATAGCGCTAATAATATCGATATCGATGCT"};
+	
+	double similarity;
+
+	std::cout << "k;Similarity Score; Average Calculation Time" << std::endl;
+
+	for (size_t k {1}; k <= max_k; ++k)
+	{
+		auto start_time = std::chrono::system_clock::now();
+		for (size_t i {}; i < iterations; ++i)
+			similarity = DNA::get_similarity(seq_a, seq_b, k);
+		auto end_time = std::chrono::system_clock::now();
+
+		auto elapsed = end_time - start_time;
+
+		std::cout << k << ';';
+		std::cout << similarity << ';';
+		std::cout << elapsed/iterations;
+		std::cout << std::endl;
+	}
 
 	return 0;
 }
