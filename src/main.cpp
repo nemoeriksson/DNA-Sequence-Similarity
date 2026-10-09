@@ -6,15 +6,15 @@
 
 int main()
 {
-	constexpr size_t iterations = 10;
-	constexpr size_t max_k = 14;
+	constexpr size_t iterations = 1000;
+	constexpr size_t max_k = 32;
 
 	DNA::Sequence seq_a {"ATACGATCGATATCTAGCTAGCTAGCTATATCTAGCATTAGCTAGCTATATCGATCGATATCGATGCTATAGCTAGTATTATATATAAGATGCATATTATAAAAATATATTATATCGATATTACGATGCTAGCTATATATCGATCGTATATCATTATATCGATATAT"};
 	DNA::Sequence seq_b {"AAATCATCATGTCAGCTACTATCTACTGACTACTACTAGCATTACATAATTCATGATCATCGAGCTACAGATTATATCGATATCTAGCTAGCTATATTATCATGCTAGCTATATATTATATCGATCAGTATATATAATATAGCGCTAATAATATCGATATCGATGCT"};
 	
 	double similarity;
 
-	std::cout << "k;Similarity Score; Average Calculation Time" << std::endl;
+	std::cout << "k;Similarity Score; Average Calculation Time" << std::endl; // CSV header
 
 	for (size_t k {1}; k <= max_k; ++k)
 	{
@@ -25,6 +25,7 @@ int main()
 
 		auto elapsed = end_time - start_time;
 
+		// CSV data
 		std::cout << k << ';';
 		std::cout << similarity << ';';
 		std::cout << elapsed/iterations;

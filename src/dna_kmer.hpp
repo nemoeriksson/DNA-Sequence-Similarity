@@ -6,21 +6,35 @@
 
 namespace DNA 
 {
+	/*
+	 * Stores the occurrences of each k-mer value in a 
+	 * contigious array, indexed by the k-mer values.
+	 *
+	 * ===== Stats & Storage Usage (*_occurrences) =====
+	 * Size = 2 * 4^k bytes
+	 *
+	 * My device:
+	 * Fills 100% of L1 cache at k = 7	| 2 * 4^7  =  32 KiB of  32 KiB
+	 *		  50%    L2			 k = 9	| 2 * 4^9  = 0.5 MiB of   1 MiB
+	 *		  50%	 L3			 k = 11 | 2 * 4^11 =   8 MiB of  16 MiB
+	 *
+	 * University device (salt):
+	 * Fills 100% of L1 cache at k = 7	| 2 * 4^7  =  32 KiB of  32 KiB
+	 *		  50%    L2			 k = 8	| 2 * 4^8  = 128 KiB of 256 KiB
+	 *		  50%	 L3			 k = 11 | 2 * 4^11 =   8 MiB of  16 MiB
+	 *
+	 * Recommended breakpoint: k=8 
+	 */
 	class KmerSet
 	{
 		public:
-			constexpr KmerSet(Sequence const& dna_sequence, const size_t k)
-				: _size(dna_sequence.get_kmer_count(k))
-				, _occurrences(new short[1ULL<<(2*k)]())
-			{
-				for (size_t i {}; i < _size; ++i)
-					++_occurrences[dna_sequence.get_kmer(i, k)];
-			}
-
+			KmerSet(Sequence const& dna_sequence, const size_t k);
+			
 			~KmerSet();
 
-			inline constexpr size_t size() const { return _size; }
-			inline constexpr uint32_t operator[](const size_t i) const 
+			inline size_t size() const { return _size; }
+
+			inline uint32_t operator[](const size_t i) const 
 			{
 				return _occurrences[i];
 			}
