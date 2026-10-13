@@ -34,14 +34,14 @@ namespace DNA
 
 			inline size_t size() const { return _size; }
 
-			inline uint32_t operator[](const size_t i) const 
+			inline uint16_t operator[](const size_t i) const 
 			{
 				return _occurrences[i];
 			}
 
 		private:
 			const size_t _size;
-			short *const _occurrences;
+			uint16_t *const _occurrences;
 			
 			// Size: 16B 
 			// Alignment: 8B

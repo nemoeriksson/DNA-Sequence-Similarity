@@ -44,16 +44,6 @@ namespace DNA
 				return size()-k+1;
 			}
 
-			inline uint32_t get_kmer(const size_t i, const size_t k) const
-			{
-				uint32_t kmer {};
-
-				for (size_t j {}; j < k; ++j)
-					kmer = (kmer << 2) | (*this)[i+j];
-
-				return kmer;
-			}
-
 			inline uint8_t* get_entries() const { return _entries; }
 
 			static inline constexpr char to_letter(const uint8_t entry)
