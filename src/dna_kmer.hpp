@@ -29,23 +29,26 @@ namespace DNA
 
 	class KmerBuckets
 	{
-		public:
-			struct BucketItem {
+	public:
+		struct BucketItem {
 				uint64_t from_b: 1;
 				uint64_t count: 7;
 				uint64_t kmer_segment: 56;
 			}; 
 
-			KmerBuckets(Sequence const& seq_a,
-				Sequence const& seq_b,
-				const size_t k);
+			KmerBuckets(
+					Sequence const& seq_a, 
+					Sequence const& seq_b,
+					const size_t k);
 
 			inline size_t get_bucket_size(const size_t bucket_index) const
 			{
 				return _buckets[bucket_index].size();
 			}
 
-			BucketItem const& at(const size_t bucket_index, const size_t i) const 
+			BucketItem const& at(
+					const size_t bucket_index, 
+					const size_t i) const 
 			{
 				return _buckets[bucket_index][i];
 			}

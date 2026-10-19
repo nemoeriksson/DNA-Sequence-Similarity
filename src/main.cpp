@@ -15,7 +15,12 @@ int main()
 	DNA::Sequence seq_a {generate_dna_sequence(dna_sequence_length)};
 	DNA::Sequence seq_b {generate_dna_sequence(dna_sequence_length)};
 
-	std::cout << "Sequence Length;k;Similarity Score; Average Calculation Time" << std::endl; // CSV header
+	// Output CSV header
+	std::cout	<< "Sequence Length;"
+				<< "k;"
+				<< "Similarity Score;" 
+				<< "Average Calculation Time;" 
+				<< std::endl; 
 
 	double similarity;
 	for (size_t k {1}; k <= max_k; ++k)
@@ -26,7 +31,8 @@ int main()
 		auto end_time = std::chrono::system_clock::now();
 
 		auto elapsed = end_time - start_time;
-		double avg_ms = std::chrono::duration<double, std::milli>(elapsed/iterations).count();
+		double avg_ms = std::chrono::duration<double, std::milli>
+			(elapsed/iterations).count();
 
 		// CSV data
 		std::cout << dna_sequence_length << ';';

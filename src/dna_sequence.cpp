@@ -11,6 +11,8 @@ namespace DNA {
 
 	Sequence::~Sequence() { delete[] _entries; }
 
+
+	// Function to output DNA sequence with std::cout
 	std::ostream& operator<<(std::ostream& os, Sequence const& sequence) 
 	{
 		for (size_t i {}; i < sequence.size(); ++i)

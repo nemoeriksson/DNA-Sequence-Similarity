@@ -60,9 +60,6 @@ namespace DNA
 		private:
 			const size_t _size {};
 			uint8_t * const _entries;
-
-			// Size: 16B
-			// Alignment: 8B
 	};
 
 	std::ostream& operator<<(std::ostream& os, Sequence const& sequence);

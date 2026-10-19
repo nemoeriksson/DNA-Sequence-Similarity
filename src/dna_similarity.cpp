@@ -12,17 +12,24 @@ static constexpr uint32_t min(const uint32_t a, const uint32_t b)
 
 /* Private declarations */
 
-/*
- * Calculates the similarities between two DNA sequences.
- * Uses a contigious array with occurrances indexed by the 
- * kmer value. 
+/* 
+ * Uses an array with one entry per possible k-mer (length = 4^k)
+ * where the n:th entry is equal to abs(C_A(x) - C_B(x)) where 
+ * C_A(x) The count of occurrences of the k-mer x inside DNA sequence A
+ * C_B(x) The count of occurrences of the k-mer x inside DNA sequence B
+ *
+ * Recommended for lower values k since requierd memory quickly increases
  */
 static double calculate_using_kmer_array(
 		DNA::Sequence const& seq_a,
 		DNA::Sequence const& seq_b, 
 		const size_t k);
 
-// TODO: Add comment
+/*
+ * Splits k-mers into different "buckets" depending on their 8 most 
+ * significant bits. Then sorts these lists and calculates the difference
+ * between occurances of the k-mers in A and B.
+ */
 static double calculate_using_kmer_buckets(
 		DNA::Sequence const& seq_a,
 		DNA::Sequence const& seq_b, 
@@ -38,7 +45,7 @@ namespace DNA
 			const size_t k)
 	{
 		if (k <= 8)
-			return calculate_using_kmer_buckets(seq_a, seq_b, k);
+			return calculate_using_kmer_array(seq_a, seq_b, k);
 		
 		return calculate_using_kmer_buckets(seq_a, seq_b, k);
 	}
@@ -46,7 +53,6 @@ namespace DNA
 
 /* Private definitions */
 
-// TODO: Add vectorization
 static double calculate_using_kmer_array(DNA::Sequence const& seq_a,
 		DNA::Sequence const& seq_b, const size_t k)
 {
