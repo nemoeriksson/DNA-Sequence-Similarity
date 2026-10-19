@@ -27,3 +27,15 @@ target_compile_options(run PRIVATE
 	-march=native
 )
 
+# cmake --build build --target=format
+file(GLOB_RECURSE ALL_CXX_SOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+)
+
+add_custom_target(format
+    COMMAND clang-format -i ${ALL_CXX_SOURCE_FILES}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Formatting all source files with clang-format"
+)

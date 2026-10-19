@@ -1,61 +1,55 @@
 #ifndef DNA_KMER_HPP
 #define DNA_KMER_HPP
 
+#include "dna_sequence.hpp"
 #include <iostream>
 #include <vector>
-#include "dna_sequence.hpp"
 
-namespace DNA 
+namespace DNA
 {
-	class KmerArray
-	{
-		using difference_type = int16_t;
+class KmerArray
+{
+    using difference_type = int16_t;
 
-		public:
-			KmerArray(Sequence const& seq_a, 
-					Sequence const& seq_b,
-					const size_t k);
-			
-			~KmerArray();
+public:
+    KmerArray(Sequence const& seq_a, Sequence const& seq_b, const size_t k);
 
-			inline difference_type operator[](const size_t i) const 
-			{
-				return _differences[i];
-			}
+    ~KmerArray();
 
-		private:
-			difference_type *const _differences;
-	};
+    inline difference_type operator[](const size_t i) const
+    {
+        return _differences[i];
+    }
 
-	class KmerBuckets
-	{
-	public:
-		struct BucketItem {
-				uint64_t from_b: 1;
-				uint64_t count: 7;
-				uint64_t kmer_segment: 56;
-			}; 
+private:
+    difference_type* const _differences;
+};
 
-			KmerBuckets(
-					Sequence const& seq_a, 
-					Sequence const& seq_b,
-					const size_t k);
+class KmerBuckets
+{
+public:
+    struct BucketItem
+    {
+        uint64_t from_b : 1;
+        uint64_t count : 7;
+        uint64_t kmer_segment : 56;
+    };
 
-			inline size_t get_bucket_size(const size_t bucket_index) const
-			{
-				return _buckets[bucket_index].size();
-			}
+    KmerBuckets(Sequence const& seq_a, Sequence const& seq_b, const size_t k);
 
-			BucketItem const& at(
-					const size_t bucket_index, 
-					const size_t i) const 
-			{
-				return _buckets[bucket_index][i];
-			}
+    inline size_t get_bucket_size(const size_t bucket_index) const
+    {
+        return _buckets[bucket_index].size();
+    }
 
-		private:
-			std::vector<BucketItem> _buckets[256] {};
-	};
+    BucketItem const& at(const size_t bucket_index, const size_t i) const
+    {
+        return _buckets[bucket_index][i];
+    }
+
+private:
+    std::vector<BucketItem> _buckets[256]{};
+};
 }
 
 #endif
