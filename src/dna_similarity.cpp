@@ -38,7 +38,7 @@ namespace DNA
 			const size_t k)
 	{
 		if (k <= 8)
-			return calculate_using_kmer_array(seq_a, seq_b, k);
+			return calculate_using_kmer_buckets(seq_a, seq_b, k);
 		
 		return calculate_using_kmer_buckets(seq_a, seq_b, k);
 	}

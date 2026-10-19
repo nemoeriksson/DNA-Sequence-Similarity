@@ -31,9 +31,9 @@ namespace DNA
 	{
 		public:
 			struct BucketItem {
-				uint64_t from_b;
-				uint64_t count;
-				uint64_t kmer_segment;
+				uint64_t from_b: 1;
+				uint64_t count: 7;
+				uint64_t kmer_segment: 56;
 			}; 
 
 			KmerBuckets(Sequence const& seq_a,
