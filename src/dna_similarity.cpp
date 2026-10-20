@@ -45,8 +45,8 @@ double get_similarity(Sequence const& seq_a,
                       Sequence const& seq_b,
                       const size_t k)
 {
-	// TODO: Find better cutoffs and experiment with hashmap
-	
+    // TODO: Find better cutoffs and experiment with hashmap
+
     if (k <= 8)
         return calculate_using_kmer_array(seq_a, seq_b, k);
 
@@ -95,8 +95,8 @@ static double calculate_using_kmer_buckets(DNA::Sequence const& seq_a,
                    (kmer_buckets.at(bucket_i, i).kmer_segment == kmer))
             {
                 auto const& item = kmer_buckets.at(bucket_i, i);
-                count_a += (!item.from_b) * item.count;
-                count_b += item.from_b * item.count;
+                count_a += item.count_a;
+                count_b += item.count_b;
 
                 ++i;
             }

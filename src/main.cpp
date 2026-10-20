@@ -8,18 +8,19 @@ static constexpr std::string generate_dna_sequence(size_t length);
 
 int main()
 {
-    constexpr size_t dna_sequence_length{ 1 << 20 };
+    constexpr size_t dna_sequence_length{ 1 << 24 };
     constexpr size_t iterations{ 1 };
     constexpr size_t max_k{ 32 };
 
-    DNA::Sequence seq_a{ generate_dna_sequence(dna_sequence_length) };
-    DNA::Sequence seq_b{ generate_dna_sequence(dna_sequence_length) };
+    DNA::Sequence seq_a{generate_dna_sequence(256*256)}; 
+    DNA::Sequence seq_b{generate_dna_sequence(256*256)}; 
 
     // Output CSV header
     std::cout << "Sequence Length;"
               << "k;"
               << "Similarity Score;"
-              << "Average Calculation Time;" << std::endl;
+              << "Average Calculation Time;"
+              << "Time per 1K Bases;" << std::endl;
 
     double similarity;
     for (size_t k{ 1 }; k <= max_k; ++k)
@@ -38,7 +39,10 @@ int main()
         std::cout << dna_sequence_length << ';';
         std::cout << k << ';';
         std::cout << similarity << ';';
-        std::cout << std::format("{:.2f}ms", avg_ms) << std::endl;
+        std::cout << std::format("{:.2f}ms;", avg_ms);
+        std::cout << std::format("{:2f}ms;",
+                                 (avg_ms * 1000) / dna_sequence_length);
+        std::cout << std::endl;
     }
 
     return 0;

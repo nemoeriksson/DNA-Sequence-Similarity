@@ -7,7 +7,7 @@
 namespace DNA
 {
 /*
- * Calculates the similarity between two DNA sequences sing k-map overlap
+ * Calculates the similarity between two DNA sequences using k-map overlap
  * and the Jaccard index.
  */
 double get_similarity(Sequence const& seq_a,

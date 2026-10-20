@@ -30,8 +30,8 @@ class KmerBuckets
 public:
     struct BucketItem
     {
-        uint64_t from_b : 1;
-        uint64_t count : 7;
+        uint64_t count_a : 4;
+		uint64_t count_b : 4;
         uint64_t kmer_segment : 56;
     };
 
