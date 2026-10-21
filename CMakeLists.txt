@@ -23,7 +23,7 @@ add_executable(run src/main.cpp)
 target_sources(run PRIVATE ${CPP_SOURCES})
 target_compile_features(run PRIVATE cxx_std_23)
 target_compile_options(run PRIVATE
-	-O2
+	-O3
 	-march=native
 )
 

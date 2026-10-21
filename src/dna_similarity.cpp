@@ -2,18 +2,6 @@
 #include "dna_kmer.hpp"
 #include "dna_sequence.hpp"
 
-/* Contant expressions */
-
-static constexpr uint32_t max(const uint32_t a, const uint32_t b)
-{
-    return (a + b + std::abs((int)a - (int)b)) / 2;
-}
-
-static constexpr uint32_t min(const uint32_t a, const uint32_t b)
-{
-    return (a + b - std::abs((int)a - (int)b)) / 2;
-}
-
 /* Private declarations */
 
 /*
@@ -29,13 +17,18 @@ static double calculate_using_kmer_array(DNA::Sequence const& seq_a,
                                          const size_t k);
 
 /*
- * Splits k-mers into different "buckets" depending on their 8 most
- * significant bits. Then sorts these lists and calculates the difference
- * between occurances of the k-mers in A and B.
+ * Adds all k-mers into a sorted list with its occurrences in separate lists.
  */
-static double calculate_using_kmer_buckets(DNA::Sequence const& seq_a,
-                                           DNA::Sequence const& seq_b,
-                                           const size_t k);
+template<typename T>
+static double calculate_using_kmer_sorted(DNA::Sequence const& seq_a,
+                                          DNA::Sequence const& seq_b,
+                                          const size_t k);
+
+template<typename T>
+static size_t get_count(DNA::KmerSorted<T> const& kmer_sorted, 
+		T target, 
+		size_t index, 
+		T(DNA::KmerSorted<T>::*at)(size_t)const);
 
 /* Public definitions */
 
@@ -45,12 +38,13 @@ double get_similarity(Sequence const& seq_a,
                       Sequence const& seq_b,
                       const size_t k)
 {
-    // TODO: Find better cutoffs and experiment with hashmap
-
     if (k <= 8)
         return calculate_using_kmer_array(seq_a, seq_b, k);
 
-    return calculate_using_kmer_buckets(seq_a, seq_b, k);
+    else if (k <= 16)
+        return calculate_using_kmer_sorted<uint32_t>(seq_a, seq_b, k);
+
+    return calculate_using_kmer_sorted<uint64_t>(seq_a, seq_b, k);
 }
 }
 
@@ -72,38 +66,69 @@ static double calculate_using_kmer_array(DNA::Sequence const& seq_a,
     return (double)(mid - diff) / (double)(mid + diff);
 }
 
-// TODO: Add vectorization where applicable
-static double calculate_using_kmer_buckets(DNA::Sequence const& seq_a,
-                                           DNA::Sequence const& seq_b,
-                                           const size_t k)
+template<typename T>
+static double calculate_using_kmer_sorted(DNA::Sequence const& seq_a,
+                                          DNA::Sequence const& seq_b,
+                                          const size_t k)
 {
-    DNA::KmerBuckets kmer_buckets{ seq_a, seq_b, k };
+    const DNA::KmerSorted<T> kmer_sorted{ seq_a, seq_b, k };
     const size_t mid = seq_a.size() + seq_b.size() - 2 * k + 2;
 
-    uint64_t diff{ 0 };
-    for (size_t bucket_i{}; bucket_i < 256; ++bucket_i)
-    {
-        const size_t bucket_size = kmer_buckets.get_bucket_size(bucket_i);
-        size_t i{};
-        while (i < bucket_size)
-        {
-            uint64_t kmer = kmer_buckets.at(bucket_i, i).kmer_segment;
-            int count_a{ 0 };
-            int count_b{ 0 };
+    size_t diff{ 0 };
+	size_t ai { 0 };
+	size_t bi { 0 };
 
-            while ((i < bucket_size) &&
-                   (kmer_buckets.at(bucket_i, i).kmer_segment == kmer))
-            {
-                auto const& item = kmer_buckets.at(bucket_i, i);
-                count_a += item.count_a;
-                count_b += item.count_b;
+    while (ai < kmer_sorted.size() && bi < kmer_sorted.size())
+	{
+		T kmer_a {kmer_sorted.at_a(ai)};
+		T kmer_b {kmer_sorted.at_b(bi)};
 
-                ++i;
-            }
+		if (kmer_a < kmer_b ) { 
+			size_t count = get_count(kmer_sorted, kmer_a, ai, &DNA::KmerSorted<T>::at_a);
+			diff += count;
+			ai += count;
+		}
+		else if (kmer_a > kmer_b) {
+			size_t count = get_count(kmer_sorted, kmer_b, bi, &DNA::KmerSorted<T>::at_b);
+			diff += count;
+			bi += count;
+		} else {
+			size_t count_a = get_count(kmer_sorted, kmer_a, ai, &DNA::KmerSorted<T>::at_a);
+			size_t count_b = get_count(kmer_sorted, kmer_b, bi, &DNA::KmerSorted<T>::at_b);
+			diff += std::abs((int)count_a - (int)count_b);
+			ai += count_a;
+			bi += count_b;
+		}
+	}
 
-            diff += std::abs(count_a - count_b);
-        }
-    }
+	// Add those left over
+	while (ai < kmer_sorted.size())
+	{
+		T kmer = kmer_sorted.at_a(ai);
+		size_t count = get_count(kmer_sorted, kmer, ai, &DNA::KmerSorted<T>::at_a);
+		diff += count;
+		ai += count;
+	}	
+	while (bi < kmer_sorted.size())
+	{
+		T kmer = kmer_sorted.at_b(bi);
+		size_t count = get_count(kmer_sorted, kmer, bi, &DNA::KmerSorted<T>::at_b);
+		diff += count;
+		bi += count;
+	}
 
     return (double)(mid - diff) / (double)(mid + diff);
+}
+template<typename T>
+static size_t get_count(DNA::KmerSorted<T> const& kmer_sorted, 
+		T target, 
+		size_t index, 
+		T(DNA::KmerSorted<T>::*at)(size_t)const) {
+	size_t count {};
+	while (index+count < kmer_sorted.size() && (kmer_sorted.*at)(index+count) == target)
+	{
+		++count;
+	}
+
+	return count;
 }
