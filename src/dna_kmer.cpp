@@ -32,4 +32,3 @@ KmerArray::~KmerArray()
     delete[] _differences;
 }
 }
-
