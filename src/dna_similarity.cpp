@@ -34,10 +34,13 @@ static size_t get_count(DNA::KmerSorted<T> const& kmer_sorted,
 
 namespace DNA
 {
-double get_similarity(Sequence const& seq_a,
-                      Sequence const& seq_b,
+double get_similarity(std::string const& dna_seq_str_a,
+                      std::string const& dna_seq_str_b,
                       const size_t k)
 {
+    DNA::Sequence seq_a{ dna_seq_str_a };
+    DNA::Sequence seq_b{ dna_seq_str_b };
+
     if (k <= 8)
         return calculate_using_kmer_array(seq_a, seq_b, k);
 

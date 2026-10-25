@@ -10,8 +10,8 @@ namespace DNA
  * Calculates the similarity between two DNA sequences using k-map overlap
  * and the Jaccard index.
  */
-double get_similarity(Sequence const& seq_a,
-                      Sequence const& seq_b,
+double get_similarity(std::string const& dna_seq_str_a,
+                      std::string const& dna_seq_str_b,
                       const size_t k);
 }
 
